@@ -51,7 +51,7 @@ h1 {
 /* Common bathroom styling */
 .bathroom {
     background-color: #f5f5f5;
-    padding: 20px;
+    padding: 30px;
     border-radius: 8px;
     position: relative;
     border: 2px solid #ccc;
@@ -96,7 +96,7 @@ h1 {
 .urinal-row {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 30px; /* Increased gap between urinals */
     position: relative;
 }
 
@@ -105,6 +105,14 @@ h1 {
     height: 140px;
     width: 10px;
     border-radius: 3px;
+}
+
+.left-wall-edge {
+    margin-right: 30px; /* Increased margin */
+}
+
+.right-wall-edge {
+    margin-left: 30px; /* Increased margin */
 }
 
 /* Level 3 styling - two walls of urinals */
@@ -138,17 +146,17 @@ h1 {
 }
 
 .left-wall {
-    margin-right: 20px;
+    margin-right: 80px; /* Increased margin for more space */
 }
 
 .right-wall {
-    margin-left: 20px;
+    margin-left: 80px; /* Increased margin for more space */
 }
 
 .left-wall .urinal-row, .right-wall .urinal-row {
     flex-direction: column;
     height: 100%;
-    gap: 20px;
+    gap: 30px; /* Increased gap between urinals */
 }
 
 .bathroom-space {
@@ -165,6 +173,19 @@ h1 {
     cursor: pointer;
     position: relative;
     border: 2px solid #aaa;
+    overflow: hidden; /* For the fill percentage */
+}
+
+/* Fill indicator for statistics */
+.urinal .fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(76, 175, 80, 0.3); /* Light green by default */
+    transition: height 0.5s ease;
+    height: 0%; /* Default is empty */
+    pointer-events: none;
 }
 
 .urinal:after {
@@ -177,6 +198,7 @@ h1 {
     height: 10px;
     background-color: #aaa;
     border-radius: 0 0 10px 10px;
+    z-index: 2;
 }
 
 .urinal:hover {
@@ -195,11 +217,25 @@ h1 {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 24px;
+    z-index: 3;
 }
 
 .urinal.selected {
     background-color: #b3e0ff;
     border-color: #0066cc;
+}
+
+/* Percentage label on filled urinals */
+.urinal .percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+    z-index: 2;
+    display: none; /* Hidden by default, shown after selection */
 }
 
 /* Rotate level 3 urinals to face the walls */

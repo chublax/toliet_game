@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const scenarioDescription = document.getElementById('scenario-description');
     const resultText = document.getElementById('result-text');
     const nextButton = document.getElementById('next-btn');
-    const scoreElement = document.getElementById('score');
     const totalScenariosElement = document.getElementById('total-scenarios');
     const levelProgressElement = document.getElementById('level-progress');
     
@@ -265,6 +264,12 @@ document.addEventListener('DOMContentLoaded', () => {
         urinals.forEach(urinal => {
             urinal.classList.remove('occupied', 'selected');
             urinal.style.pointerEvents = 'auto';
+            
+            // Reset fill levels and percentages
+            const fill = urinal.querySelector('.fill');
+            const percentage = urinal.querySelector('.percentage');
+            if (fill) fill.style.height = '0%';
+            if (percentage) percentage.style.display = 'none';
         });
         
         resultText.textContent = '';
@@ -299,60 +304,12 @@ document.addEventListener('DOMContentLoaded', () => {
             urinals[index].style.pointerEvents = 'none';
         });
         
-        // Update statistics displays for this scenario
-        updateStatisticsDisplays();
-        
         // Hide the next button until a choice is made
         nextButton.style.display = 'none';
         nextButton.textContent = 'Next Scenario';
         selectedUrinal = null;
     }
     
-    // Update the statistics shown on hover for all urinals
-    function updateStatisticsDisplays() {
-        const urinalContainer = document.getElementById(`level-${currentLevel}`);
-        const urinals = urinalContainer.querySelectorAll('.urinal');
-        
-        urinals.forEach((urinal, index) => {
-            const statsDisplay = urinal.querySelector('.stats-display');
-            if (statsDisplay) {
-                // Get percentage from the current scenario
-                if (currentScenario.statistics[index]) {
-                    const statText = currentScenario.statistics[index];
-                    const percentage = statText.match(/(\d+)%/);
-                    if (percentage && percentage[1]) {
-                        statsDisplay.textContent = percentage[1] + '%';
-                        
-                        // Color code based on popularity
-                        const percent = parseInt(percentage[1]);
-                        if (percent > 60) {
-                            statsDisplay.style.backgroundColor = 'rgba(76, 175, 80, 0.9)'; // Green for popular
-                        } else if (percent > 30) {
-                            statsDisplay.style.backgroundColor = 'rgba(255, 193, 7, 0.9)'; // Amber for medium
-                        } else if (percent > 10) {
-                            statsDisplay.style.backgroundColor = 'rgba(255, 152, 0, 0.9)'; // Orange for less common
-                        } else {
-                            statsDisplay.style.backgroundColor = 'rgba(244, 67, 54, 0.9)'; // Red for rare
-                        }
-                    } else {
-                        statsDisplay.textContent = '< 1%';
-                        statsDisplay.style.backgroundColor = 'rgba(244, 67, 54, 0.9)';
-                    }
-                } else {
-                    statsDisplay.textContent = '< 1%';
-                    statsDisplay.style.backgroundColor = 'rgba(244, 67, 54, 0.9)';
-                }
-                
-                // Hide stats for occupied urinals
-                if (currentScenario.occupiedUrinals.includes(index)) {
-                    statsDisplay.style.display = 'none';
-                } else {
-                    statsDisplay.style.display = 'block';
-                }
-            }
-        });
-    }
-
     // Handle urinal selection
     function handleUrinalClick(level, index) {
         if (level !== currentLevel) return;
@@ -373,6 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // If no specific statistic for this urinal but a "wait" option exists
             statistic = "You made an unconventional choice. " + currentScenario.statistics["wait"];
         }
+        
+        // Fill all urinals based on their usage statistics
+        showAllUrinalStats(urinals);
         
         if (statistic) {
             resultText.textContent = statistic;
@@ -406,6 +366,58 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Show the next button
         nextButton.style.display = 'inline-block';
+    }
+    
+    // Show fill levels for all urinals after making a selection
+    function showAllUrinalStats(urinals) {
+        urinals.forEach((urinal, index) => {
+            if (currentScenario.occupiedUrinals.includes(index)) {
+                return; // Skip occupied urinals
+            }
+            
+            const fillElement = urinal.querySelector('.fill');
+            const percentageElement = urinal.querySelector('.percentage');
+            
+            if (fillElement && percentageElement) {
+                // Get percent value from statistics
+                if (currentScenario.statistics[index]) {
+                    const statText = currentScenario.statistics[index];
+                    const percentMatch = statText.match(/(\d+)%/);
+                    
+                    if (percentMatch && percentMatch[1]) {
+                        const percent = parseInt(percentMatch[1]);
+                        
+                        // Update the fill height
+                        fillElement.style.height = `${percent}%`;
+                        percentageElement.textContent = `${percent}%`;
+                        percentageElement.style.display = 'block';
+                        
+                        // Color the fill based on popularity
+                        if (percent > 60) {
+                            fillElement.style.backgroundColor = 'rgba(76, 175, 80, 0.5)'; // Green for popular
+                        } else if (percent > 30) {
+                            fillElement.style.backgroundColor = 'rgba(255, 193, 7, 0.5)'; // Amber for medium
+                        } else if (percent > 10) {
+                            fillElement.style.backgroundColor = 'rgba(255, 152, 0, 0.5)'; // Orange for less common
+                        } else {
+                            fillElement.style.backgroundColor = 'rgba(244, 67, 54, 0.5)'; // Red for rare
+                        }
+                    } else {
+                        // If no percent in the text
+                        fillElement.style.height = '1%';
+                        percentageElement.textContent = `<1%`;
+                        percentageElement.style.display = 'block';
+                        fillElement.style.backgroundColor = 'rgba(244, 67, 54, 0.5)';
+                    }
+                } else {
+                    // If no statistics for this urinal
+                    fillElement.style.height = '1%';
+                    percentageElement.textContent = `<1%`;
+                    percentageElement.style.display = 'block';
+                    fillElement.style.backgroundColor = 'rgba(244, 67, 54, 0.5)';
+                }
+            }
+        });
     }
 
     // Start the game
