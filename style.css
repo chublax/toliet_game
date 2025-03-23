@@ -48,10 +48,113 @@ h1 {
     display: none; /* Hide all by default */
 }
 
+/* Common bathroom styling */
+.bathroom {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    border: 2px solid #ccc;
+}
+
+/* Entrance styling */
+.entrance {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 20px;
+    background-color: #aaa;
+    border-radius: 5px 5px 0 0;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.entrance:after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #aaa;
+}
+
+/* Level 1 and 2 styling */
+#level-1 .bathroom, #level-2 .bathroom {
+    display: flex;
+    justify-content: center;
+}
+
 .urinal-row {
     display: flex;
     justify-content: space-between;
     gap: 10px;
+    position: relative;
+}
+
+.wall {
+    background-color: #bbb;
+    height: 140px;
+    width: 10px;
+    border-radius: 3px;
+}
+
+/* Level 3 styling - two walls of urinals */
+.bathroom-walls {
+    display: flex;
+    height: 300px;
+    position: relative;
+}
+
+.side-wall {
+    width: 10px;
+    height: 100%;
+    background-color: #bbb;
+    border-radius: 3px;
+}
+
+.back-wall {
+    height: 10px;
+    width: 100%;
+    background-color: #bbb;
+    position: absolute;
+    top: 0;
+    border-radius: 3px;
+}
+
+.left-wall, .right-wall {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: relative;
+}
+
+.left-wall {
+    margin-right: 20px;
+}
+
+.right-wall {
+    margin-left: 20px;
+}
+
+.left-wall .urinal-row, .right-wall .urinal-row {
+    flex-direction: column;
+    height: 100%;
+    gap: 20px;
+}
+
+.bathroom-space {
+    flex-grow: 1;
+    background-color: #f0f0f0;
+    border-radius: 5px;
 }
 
 .urinal {
@@ -85,31 +188,63 @@ h1 {
     cursor: not-allowed;
 }
 
+.urinal.occupied:before {
+    content: '👤';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+}
+
 .urinal.selected {
     background-color: #b3e0ff;
     border-color: #0066cc;
 }
 
-/* Bathroom with two walls styling */
-.bathroom-walls {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
+/* Rotate level 3 urinals to face the walls */
+#level-3 .urinal {
+    transform: rotate(90deg);
 }
 
-.bathroom-space {
-    height: 80px;
-    background-color: #f5f5f5;
-    border-radius: 5px;
+.left-wall .urinal {
+    margin-left: 20px;
 }
 
-.top-row, .bottom-row {
-    justify-content: space-around;
+.right-wall .urinal {
+    margin-right: 20px;
+}
+
+/* Statistics display */
+.stats-display {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: #333;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.urinal:hover .stats-display {
+    opacity: 1;
 }
 
 .result-container {
     text-align: center;
     margin-bottom: 20px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid #4CAF50;
 }
 
 #result-text {

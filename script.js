@@ -209,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Add click event listeners
             urinals.forEach((urinal, index) => {
-                const urinaId = urinal.id;
                 urinal.addEventListener('click', () => handleUrinalClick(levelNumber, index));
             });
         });
@@ -300,10 +299,58 @@ document.addEventListener('DOMContentLoaded', () => {
             urinals[index].style.pointerEvents = 'none';
         });
         
+        // Update statistics displays for this scenario
+        updateStatisticsDisplays();
+        
         // Hide the next button until a choice is made
         nextButton.style.display = 'none';
         nextButton.textContent = 'Next Scenario';
         selectedUrinal = null;
+    }
+    
+    // Update the statistics shown on hover for all urinals
+    function updateStatisticsDisplays() {
+        const urinalContainer = document.getElementById(`level-${currentLevel}`);
+        const urinals = urinalContainer.querySelectorAll('.urinal');
+        
+        urinals.forEach((urinal, index) => {
+            const statsDisplay = urinal.querySelector('.stats-display');
+            if (statsDisplay) {
+                // Get percentage from the current scenario
+                if (currentScenario.statistics[index]) {
+                    const statText = currentScenario.statistics[index];
+                    const percentage = statText.match(/(\d+)%/);
+                    if (percentage && percentage[1]) {
+                        statsDisplay.textContent = percentage[1] + '%';
+                        
+                        // Color code based on popularity
+                        const percent = parseInt(percentage[1]);
+                        if (percent > 60) {
+                            statsDisplay.style.backgroundColor = 'rgba(76, 175, 80, 0.9)'; // Green for popular
+                        } else if (percent > 30) {
+                            statsDisplay.style.backgroundColor = 'rgba(255, 193, 7, 0.9)'; // Amber for medium
+                        } else if (percent > 10) {
+                            statsDisplay.style.backgroundColor = 'rgba(255, 152, 0, 0.9)'; // Orange for less common
+                        } else {
+                            statsDisplay.style.backgroundColor = 'rgba(244, 67, 54, 0.9)'; // Red for rare
+                        }
+                    } else {
+                        statsDisplay.textContent = '< 1%';
+                        statsDisplay.style.backgroundColor = 'rgba(244, 67, 54, 0.9)';
+                    }
+                } else {
+                    statsDisplay.textContent = '< 1%';
+                    statsDisplay.style.backgroundColor = 'rgba(244, 67, 54, 0.9)';
+                }
+                
+                // Hide stats for occupied urinals
+                if (currentScenario.occupiedUrinals.includes(index)) {
+                    statsDisplay.style.display = 'none';
+                } else {
+                    statsDisplay.style.display = 'block';
+                }
+            }
+        });
     }
 
     // Handle urinal selection
@@ -329,10 +376,27 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (statistic) {
             resultText.textContent = statistic;
-            resultText.style.color = '#333';
+            
+            // Extract percentage from statistic if present
+            const percentage = statistic.match(/(\d+)%/);
+            if (percentage && percentage[1]) {
+                const percent = parseInt(percentage[1]);
+                // Color code the result based on how common the choice is
+                if (percent > 60) {
+                    resultText.style.color = '#4CAF50'; // Green for very common
+                } else if (percent > 30) {
+                    resultText.style.color = '#FF9800'; // Orange for fairly common
+                } else if (percent > 10) {
+                    resultText.style.color = '#FF5722'; // Deep orange for uncommon
+                } else {
+                    resultText.style.color = '#F44336'; // Red for rare
+                }
+            } else {
+                resultText.style.color = '#333'; // Default color
+            }
         } else {
             resultText.textContent = "Very few men would choose this urinal in this situation.";
-            resultText.style.color = '#333';
+            resultText.style.color = '#F44336'; // Red for very rare choices
         }
         
         // Disable further clicks on urinals for this round
