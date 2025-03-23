@@ -27,6 +27,12 @@ h1 {
     color: #333;
 }
 
+.level-container {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #4CAF50;
+}
+
 .scenario-container {
     margin-bottom: 20px;
     text-align: center;
@@ -39,6 +45,7 @@ h1 {
 
 .urinals-container {
     margin: 30px 0;
+    display: none; /* Hide all by default */
 }
 
 .urinal-row {
@@ -83,6 +90,23 @@ h1 {
     border-color: #0066cc;
 }
 
+/* Bathroom with two walls styling */
+.bathroom-walls {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.bathroom-space {
+    height: 80px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+
+.top-row, .bottom-row {
+    justify-content: space-around;
+}
+
 .result-container {
     text-align: center;
     margin-bottom: 20px;
@@ -112,4 +136,10 @@ h1 {
     text-align: center;
     font-size: 18px;
     font-weight: bold;
+}
+
+#level-progress {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #666;
 } 
