@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLevel = 1;
     let currentScenario = null;
     let usedScenarioIndices = [];
-    let score = 0;
     let selectedUrinal = null;
     let scenariosPerLevel = 5;
     let scenariosCompleted = 0;
@@ -33,46 +32,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     description: "The bathroom is completely empty.",
                     occupiedUrinals: [],
-                    correctUrinalChoices: [0, 4], // First or last is usually best when empty
-                    feedback: {
-                        correct: "Good choice! When the bathroom is empty, picking an end urinal is proper etiquette.",
-                        incorrect: "Not the best choice. When a bathroom is empty, it's best to pick an end urinal to maximize spacing for future users."
+                    statistics: {
+                        0: "42% of men choose this end urinal when the bathroom is empty.",
+                        1: "3% of men choose this urinal when the bathroom is empty.",
+                        2: "8% of men choose the middle urinal when the bathroom is empty.",
+                        3: "4% of men choose this urinal when the bathroom is empty.",
+                        4: "43% of men choose this end urinal when the bathroom is empty."
                     }
                 },
                 {
                     description: "There's one person at the far left urinal.",
                     occupiedUrinals: [0],
-                    correctUrinalChoices: [4], // Far right is best
-                    feedback: {
-                        correct: "Perfect! You chose the urinal farthest away from the other person.",
-                        incorrect: "Awkward! You should choose the urinal farthest from others when possible."
+                    statistics: {
+                        1: "5% of men choose the urinal next to another person when alternatives are available.",
+                        2: "12% of men choose this urinal to maintain some distance.",
+                        3: "18% of men choose this urinal for better spacing.",
+                        4: "65% of men choose the furthest urinal from another person."
                     }
                 },
                 {
                     description: "There are people at both end urinals.",
                     occupiedUrinals: [0, 4],
-                    correctUrinalChoices: [2], // Middle is best to maintain spacing
-                    feedback: {
-                        correct: "Good job! The middle urinal provides maximum distance from both occupied urinals.",
-                        incorrect: "You broke the urinal gap rule! Always try to keep at least one urinal between you and others."
+                    statistics: {
+                        1: "15% of men choose this urinal, staying closer to one side.",
+                        2: "70% of men choose the middle urinal for maximum spacing.",
+                        3: "15% of men choose this urinal, staying closer to one side."
                     }
                 },
                 {
                     description: "There are people at the first and middle urinal.",
                     occupiedUrinals: [0, 2],
-                    correctUrinalChoices: [4], // Far right is best
-                    feedback: {
-                        correct: "Well done! You picked the most distant option.",
-                        incorrect: "Poor choice! You should pick the urinal that maximizes your distance from others."
+                    statistics: {
+                        1: "8% of men choose to be between two occupied urinals.",
+                        3: "22% of men choose this urinal.",
+                        4: "70% of men choose the furthest possible urinal."
                     }
                 },
                 {
-                    description: "The bathroom is crowded with only one urinal left, right between two occupied ones.",
+                    description: "The bathroom is crowded with only urinals 1 and 3 available.",
                     occupiedUrinals: [0, 2, 4],
-                    correctUrinalChoices: [1, 3], // No great options, but have to pick one
-                    feedback: {
-                        correct: "Not ideal, but sometimes you have no choice in a crowded bathroom!",
-                        incorrect: "You tried to use an occupied urinal! That would be... problematic."
+                    statistics: {
+                        1: "52% of men choose this urinal in this situation.",
+                        3: "48% of men choose this urinal in this situation."
                     }
                 }
             ]
@@ -85,46 +86,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     description: "You enter a small bathroom with 3 urinals. All are empty.",
                     occupiedUrinals: [],
-                    correctUrinalChoices: [0, 2], // Ends are still best
-                    feedback: {
-                        correct: "Good choice! Even in a small bathroom, end urinals are the way to go.",
-                        incorrect: "The middle urinal should be your last choice when others are empty."
+                    statistics: {
+                        0: "46% of men choose the left end urinal in a small bathroom.",
+                        1: "9% of men choose the middle urinal when end urinals are available.",
+                        2: "45% of men choose the right end urinal in a small bathroom."
                     }
                 },
                 {
                     description: "There's someone using the leftmost urinal in this small bathroom.",
                     occupiedUrinals: [0],
-                    correctUrinalChoices: [2], // Right is best
-                    feedback: {
-                        correct: "Good! Maximum distance is maintained.",
-                        incorrect: "Too close for comfort! Always maximize distance."
+                    statistics: {
+                        1: "12% of men choose the middle urinal next to an occupied one.",
+                        2: "88% of men choose the farthest urinal from the other person."
                     }
                 },
                 {
                     description: "There's someone at the middle urinal. Really?",
                     occupiedUrinals: [1],
-                    correctUrinalChoices: [0, 2], // Either end works
-                    feedback: {
-                        correct: "Good choice dealing with an awkward situation!",
-                        incorrect: "You can't use an occupied urinal!"
+                    statistics: {
+                        0: "48% of men choose the left urinal in this situation.",
+                        2: "52% of men choose the right urinal in this situation."
                     }
                 },
                 {
                     description: "There are people at both end urinals in this tiny bathroom.",
                     occupiedUrinals: [0, 2],
-                    correctUrinalChoices: [1], // No choice but middle
-                    feedback: {
-                        correct: "Sometimes there's no perfect option, but you made the best of it.",
-                        incorrect: "You can't use an occupied urinal!"
+                    statistics: {
+                        1: "72% of men would use the middle urinal when necessary.",
+                        "wait": "28% of men would actually wait or find another bathroom."
                     }
                 },
                 {
                     description: "You enter and see a very large man using the middle urinal, leaving minimal space on either side.",
                     occupiedUrinals: [1],
-                    correctUrinalChoices: [0, 2], // Either end
-                    feedback: {
-                        correct: "Personal space is at a premium here, but you managed!",
-                        incorrect: "You can't share a urinal with someone else!"
+                    statistics: {
+                        0: "40% of men choose the left end despite the space issue.",
+                        2: "44% of men choose the right end despite the space issue.",
+                        "wait": "16% of men would wait or find another bathroom."
                     }
                 }
             ]
@@ -137,46 +135,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     description: "You enter a fancy bathroom with urinals on opposite walls. All are empty.",
                     occupiedUrinals: [],
-                    correctUrinalChoices: [0, 2, 3, 5], // Any corner urinal is good
-                    feedback: {
-                        correct: "Corner urinals are a good choice when the bathroom is empty!",
-                        incorrect: "Corner urinals offer the most privacy in an empty bathroom."
+                    statistics: {
+                        0: "22% of men choose this corner urinal.",
+                        1: "4% of men choose this middle urinal on the top wall.",
+                        2: "23% of men choose this corner urinal.",
+                        3: "24% of men choose this corner urinal on the bottom wall.",
+                        4: "5% of men choose this middle urinal on the bottom wall.",
+                        5: "22% of men choose this corner urinal on the bottom wall."
                     }
                 },
                 {
                     description: "There's someone using a urinal on the left wall (top row).",
                     occupiedUrinals: [1], // Middle of top row
-                    correctUrinalChoices: [3, 4, 5], // Opposite wall is best
-                    feedback: {
-                        correct: "Good! Using the opposite wall provides maximum privacy.",
-                        incorrect: "Using the opposite wall would have been more appropriate."
+                    statistics: {
+                        0: "12% of men choose this urinal on the same wall.",
+                        2: "14% of men choose this urinal on the same wall.",
+                        3: "28% of men choose this urinal on the opposite wall.",
+                        4: "19% of men choose this urinal on the opposite wall.",
+                        5: "27% of men choose this urinal on the opposite wall."
                     }
                 },
                 {
                     description: "There are people using urinals on both walls, facing each other.",
                     occupiedUrinals: [1, 4], // Middle of each row
-                    correctUrinalChoices: [0, 2, 3, 5], // Corners are best
-                    feedback: {
-                        correct: "Corner urinals are best to avoid awkward face-to-face situations!",
-                        incorrect: "That creates an awkward face-to-face situation with another user."
+                    statistics: {
+                        0: "26% of men choose this corner to avoid face-to-face scenarios.",
+                        2: "28% of men choose this corner to avoid face-to-face scenarios.",
+                        3: "24% of men choose this corner to avoid face-to-face scenarios.",
+                        5: "22% of men choose this corner to avoid face-to-face scenarios."
                     }
                 },
                 {
                     description: "The bathroom is busy with four people using corner urinals.",
                     occupiedUrinals: [0, 2, 3, 5], // All corners taken
-                    correctUrinalChoices: [1, 4], // Middle spots are only options
-                    feedback: {
-                        correct: "Not ideal, but you made the best choice available!",
-                        incorrect: "You can't use an occupied urinal!"
+                    statistics: {
+                        1: "52% of men choose this middle urinal on the top wall.",
+                        4: "48% of men choose this middle urinal on the bottom wall."
                     }
                 },
                 {
                     description: "You enter and see a group of friends chatting while using urinals on the same wall.",
                     occupiedUrinals: [0, 1, 2], // Entire top row
-                    correctUrinalChoices: [3, 4, 5], // Bottom row options
-                    feedback: {
-                        correct: "Good choice to use the opposite wall from the group!",
-                        incorrect: "You'd rather not join that conversation, would you?"
+                    statistics: {
+                        3: "34% of men choose this urinal on the opposite wall.",
+                        4: "32% of men choose this urinal on the opposite wall.",
+                        5: "34% of men choose this urinal on the opposite wall."
                     }
                 }
             ]
@@ -185,16 +188,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize the game
     function initGame() {
-        score = 0;
         scenariosCompleted = 0;
         currentLevel = 1;
         usedScenarioIndices = [];
         
-        scoreElement.textContent = score;
         totalScenariosElement.textContent = scenariosPerLevel * levels.length;
         updateLevelDisplay();
         
         // Set up event listener for next button
+        nextButton.removeEventListener('click', initGame);
         nextButton.addEventListener('click', handleNextButton);
         
         // Set up urinals for all levels
@@ -239,12 +241,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (scenariosCompleted % scenariosPerLevel === 0 && currentLevel < levels.length) {
             currentLevel++;
             updateLevelDisplay();
-            resultText.textContent = `Level ${currentLevel} - New bathroom layout! The challenge increases...`;
-            resultText.style.color = '#4CAF50';
-            nextButton.textContent = 'Start Level';
+            loadNextScenario();
         } else if (scenariosCompleted >= scenariosPerLevel * levels.length) {
             // Game completed
-            resultText.textContent = `Game completed! Final score: ${score} out of ${scenariosPerLevel * levels.length}`;
+            resultText.textContent = `Game completed! You've seen how your choices compare to others.`;
             resultText.style.color = '#4CAF50';
             nextButton.textContent = 'Play Again';
             nextButton.removeEventListener('click', handleNextButton);
@@ -320,17 +320,19 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedUrinal = index;
         urinals[index].classList.add('selected');
         
-        // Check if the choice is correct
-        const isCorrect = currentScenario.correctUrinalChoices.includes(index);
+        // Show statistics for the choice rather than right/wrong feedback
+        let statistic = currentScenario.statistics[index];
+        if (!statistic && currentScenario.statistics["wait"]) {
+            // If no specific statistic for this urinal but a "wait" option exists
+            statistic = "You made an unconventional choice. " + currentScenario.statistics["wait"];
+        }
         
-        if (isCorrect) {
-            score++;
-            scoreElement.textContent = score;
-            resultText.textContent = currentScenario.feedback.correct;
-            resultText.style.color = 'green';
+        if (statistic) {
+            resultText.textContent = statistic;
+            resultText.style.color = '#333';
         } else {
-            resultText.textContent = currentScenario.feedback.incorrect;
-            resultText.style.color = 'red';
+            resultText.textContent = "Very few men would choose this urinal in this situation.";
+            resultText.style.color = '#333';
         }
         
         // Disable further clicks on urinals for this round
