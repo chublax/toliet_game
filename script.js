@@ -335,12 +335,14 @@ document.addEventListener('DOMContentLoaded', () => {
         showAllUrinalStats(urinals);
         
         if (statistic) {
-            resultText.textContent = statistic;
-            
             // Extract percentage from statistic if present
             const percentage = statistic.match(/(\d+)%/);
             if (percentage && percentage[1]) {
                 const percent = parseInt(percentage[1]);
+                // Calculate a realistic number of people based on the percentage
+                const peopleCount = Math.round(percent * 0.8); // Scale down to make it more realistic
+                resultText.textContent = `${peopleCount} people would choose this urinal.`;
+                
                 // Color code the result based on how common the choice is
                 if (percent > 60) {
                     resultText.style.color = '#4CAF50'; // Green for very common
@@ -352,10 +354,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     resultText.style.color = '#F44336'; // Red for rare
                 }
             } else {
-                resultText.style.color = '#333'; // Default color
+                resultText.textContent = "Very few men would choose this urinal in this situation.";
+                resultText.style.color = '#F44336'; // Red for very rare choices
             }
         } else {
-            resultText.textContent = "Very few men would choose this urinal in this situation.";
+            resultText.textContent = "Less than 1 man would choose this urinal.";
             resultText.style.color = '#F44336'; // Red for very rare choices
         }
         
